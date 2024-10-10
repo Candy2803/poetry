@@ -98,6 +98,21 @@ def submit_poem():
 
     return jsonify({'message': 'Poem submitted successfully!'}), 201
 
+# Get Users Endpoint
+@app.route('/api/users', methods=['GET'])
+def get_users():
+    conn = get_db_connection()
+    users = conn.execute('SELECT id, username FROM users').fetchall()
+    conn.close()
+
+    user_list = []
+    for user in users:
+        user_list.append({
+            'id': user['id'],
+            'username': user['username']
+        })
+
+    return jsonify(user_list), 200
 
 
 # Get Poems Endpoint
