@@ -98,6 +98,8 @@ def submit_poem():
 
     return jsonify({'message': 'Poem submitted successfully!'}), 201
 
+
+
 # Get Poems Endpoint
 @app.route('/api/poems', methods=['GET'])
 def get_poems():
