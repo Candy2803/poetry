@@ -24,7 +24,7 @@ function App() {
 
   const fetchPoems = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/poems');
+      const response = await axios.get('https://poetry-3.onrender.com/api/poems');
       setPoems(response.data); 
       if (isViewingMyPoems && userId) {
         fetchUserPoems(); 
@@ -42,7 +42,7 @@ function App() {
       }
   
       console.log(`Fetching poems for user with ID: ${userId}`);
-      const response = await axios.get(`http://localhost:5000/api/poems/user/${userId}`);
+      const response = await axios.get(`https://poetry-3.onrender.com/api/poems/user/${userId}`);
       
       console.log('User poems fetched:', response.data);
       setMyPoems(response.data);  // Set user-specific poems
@@ -54,7 +54,7 @@ function App() {
 
   const handleSignup = async () => {
     try {
-      await axios.post('http://localhost:5000/api/register', {
+      await axios.post('https://poetry-3.onrender.com/api/register', {
         username,
         password,
       });
@@ -67,7 +67,7 @@ function App() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/login', {
+      const response = await axios.post('https://poetry-3.onrender.com/api/login', {
         username,
         password,
       });
@@ -87,7 +87,7 @@ function App() {
 
   const handleSubmitPoem = async () => {
     try {
-      await axios.post('http://localhost:5000/api/poems', {
+      await axios.post('https://poetry-3.onrender.com/api/poems', {
         title,
         content,
         user_id: userId,
@@ -104,7 +104,7 @@ function App() {
 
   const handleDeletePoem = async (poemId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/poems/${poemId}`, {
+      await axios.delete(`https://poetry-3.onrender.com/api/poems/${poemId}`, {
         data: { user_id: userId }, // Pass the logged-in user ID to verify authorship
       });
       alert('Poem deleted successfully!');
