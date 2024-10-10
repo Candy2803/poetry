@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './App.css';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -11,7 +12,7 @@ function App() {
   const [poems, setPoems] = useState([]);
   const [myPoems, setMyPoems] = useState([]);
   const [isViewingMyPoems, setIsViewingMyPoems] = useState(false);
-  
+
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
@@ -44,12 +45,11 @@ function App() {
       const response = await axios.get(`http://localhost:5000/api/poems/user/${userId}`);
       
       console.log('User poems fetched:', response.data);
-      setMyPoems(response.data);  // Set user-specific poems
+      setMyPoems(response.data);  
     } catch (error) {
       console.error('Error fetching user poems:', error);
     }
   };
-  
 
   const handleSignup = async () => {
     try {
@@ -82,7 +82,6 @@ function App() {
       alert('Invalid credentials');
     }
   };
-  
 
   const handleSubmitPoem = async () => {
     try {
@@ -104,7 +103,7 @@ function App() {
   const handleDeletePoem = async (poemId) => {
     try {
       await axios.delete(`http://localhost:5000/api/poems/${poemId}`, {
-        data: { user_id: userId }, // Pass the logged-in user ID to verify authorship
+        data: { user_id: userId }, 
       });
       alert('Poem deleted successfully!');
       fetchPoems(); 
@@ -113,7 +112,6 @@ function App() {
       alert('You are not authorized to delete this poem');
     }
   };
-  
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -122,44 +120,31 @@ function App() {
     alert('Logged out successfully!');
   };
 
-  // const toggleMyPoems = () => {
-  //   if (!isViewingMyPoems) {
-  //     if (userId) {
-  //       fetchUserPoems();  // Fetch user poems only if userId is set
-  //     } else {
-  //       console.error('No userId set');
-  //     }
-  //   }
-  //   setIsViewingMyPoems(!isViewingMyPoems);  // Toggle the view
-  // };
-  
-
   return (
-    <div className="bg-black min-h-screen text-white p-6">
-      <div className="container mx-auto">
-        <h1 className="text-4xl text-purple-400 mb-6 text-center">Poetry Haven</h1>
-
+    <div className="min-h-screen text-lime-400 p-6">
+      <video autoPlay muted loop className="absolute top-0 left-0 min-w-full min-h-full -z-10 bg-black">
+        <source src="https://ik.imagekit.io/24rqula8cp/12146723_3840_2160_30fps.mp4?updatedAt=1728552794824" type="video/mp4" />
+      </video>
+      <div className="container mx-auto flex items-center justify-center h-screen">
         {!isLoggedIn ? (
-          <div className="mb-6">
-            <h2 className="text-2xl mb-4 text-center">Welcome!</h2>
+          <div className="mb-6 flex flex-col items-center">
+            <h1 className="text-5xl text-white mb-10 text-center font-extrabold">Poetry Haven</h1>
             <button
-              className="bg-purple-600 p-2 rounded hover:bg-purple-700 mr-2"
+              className="bg-purple-600 text-2xl py-3 px-6 rounded hover:bg-purple-700 mb-4 w-64 cursor-pointer"
               onClick={() => setIsSignupOpen(true)}
             >
               Sign Up
             </button>
             <button
-              className="bg-purple-600 p-2 rounded hover:bg-purple-700"
+              className="bg-purple-600 text-2xl py-3 px-6 rounded hover:bg-purple-700 w-64 cursor-pointer"
               onClick={() => setIsLoginOpen(true)}
             >
               Log In
             </button>
 
-            {/* Signup Modal */}
             {isSignupOpen && (
               <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
                 <div className="bg-gray-800 p-6 rounded-lg relative">
-                  {/* Close Button */}
                   <button
                     className="absolute top-0 right-0 m-2 text-white hover:text-gray-700"
                     onClick={() => setIsSignupOpen(false)}
@@ -182,7 +167,7 @@ function App() {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <button
-                    className="bg-purple-600 p-2 rounded hover:bg-purple-700 mr-2 mt-7"
+                    className="bg-purple-600 p-2 rounded hover:bg-purple-700 mt-7"
                     onClick={handleSignup}
                   >
                     Sign Up
@@ -191,11 +176,9 @@ function App() {
               </div>
             )}
 
-            {/* Login Modal */}
             {isLoginOpen && (
               <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
                 <div className="bg-gray-800 p-6 rounded-lg relative">
-                  {/* Close Button */}
                   <button
                     className="absolute top-0 right-0 m-2 text-white hover:text-gray-700"
                     onClick={() => setIsLoginOpen(false)}
@@ -218,7 +201,7 @@ function App() {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <button
-                    className="bg-purple-600 p-2 rounded hover:bg-purple-700 mr-2 mt-7"
+                    className="bg-purple-600 p-2 rounded hover:bg-purple-700 mt-7"
                     onClick={handleLogin}
                   >
                     Log In
@@ -266,35 +249,31 @@ function App() {
                     <p>No poems found.</p>
                   ) : (
                     myPoems.map((poem) => (
-                      <li key={poem.id} className="bg-gray-900 rounded p-4 shadow-lg flex flex-col">
-                        <h3 className="text-lg font-semibold text-purple-400">{poem.title}</h3>
-                        <p className="text-purple-300 italic">By: {poem.poet}</p>
-                        <pre className="text-purple-300 whitespace-pre-wrap break-words mt-2 flex-grow">
-                          {poem.content}
-                        </pre>
+                      <li key={poem.id} className="bg-gray-800 p-4 rounded shadow-md">
+                        <h3 className="text-xl mb-2">{poem.title}</h3>
+                        <p className="mb-2">{poem.content}</p>
+                        <button
+                          className="bg-red-600 p-2 rounded hover:bg-red-700"
+                          onClick={() => handleDeletePoem(poem.id)}
+                        >
+                          Delete Poem
+                        </button>
                       </li>
                     ))
                   )}
                 </ul>
               ) : (
                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {poems.map((poem) => (
-          <li key={poem.id} className="bg-gray-900 rounded p-4 shadow-lg flex flex-col">
-    <h3 className="text-lg font-semibold text-purple-400">{poem.title}</h3>
-    <p className="text-purple-300 italic">By: {poem.poet}</p>
-    <pre className="text-purple-300 whitespace-pre-wrap break-words mt-2 flex-grow">
-      {poem.content}
-    </pre>
-    {poem.user_id === userId && (
-      <button
-        className="bg-blue-600 p-2 rounded hover:bg-gray-500 mt-2"
-        onClick={() => handleDeletePoem(poem.id)}
-      >
-        Delete Poem
-      </button>
-    )}
-  </li>
-))}
+                  {poems.length === 0 ? (
+                    <p>No poems found.</p>
+                  ) : (
+                    poems.map((poem) => (
+                      <li key={poem.id} className="bg-gray-800 p-4 rounded shadow-md">
+                        <h3 className="text-xl mb-2">{poem.title}</h3>
+                        <p className="mb-2">{poem.content}</p>
+                      </li>
+                    ))
+                  )}
                 </ul>
               )}
             </div>
