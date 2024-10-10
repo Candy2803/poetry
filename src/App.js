@@ -12,10 +12,13 @@ function App() {
   const [poems, setPoems] = useState([]);
   const [myPoems, setMyPoems] = useState([]);
   const [isViewingMyPoems, setIsViewingMyPoems] = useState(false);
-  
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isPoemModalOpen, setIsPoemModalOpen] = useState(false); // State for poem modal
+
+  // State to manage speech synthesis
+  const [isReciting, setIsReciting] = useState(false); // To track if a poem is being recited
+  const [currentUtterance, setCurrentUtterance] = useState(null); // To track the current utterance
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -123,15 +126,53 @@ function App() {
     setUserId(null);
     setIsViewingMyPoems(false);
     alert('Logged out successfully!');
+    stopRecitation(); // Stop any ongoing recitation on logout
+  };
+
+  const toggleRecitePoem = (poem) => {
+    if (isReciting) {
+      // Stop reciting if currently reciting
+      stopRecitation();
+    } else {
+      // Start reciting the poem
+      startRecitation(poem);
+    }
+  };
+
+  const startRecitation = (poem) => {
+    // Create a new SpeechSynthesisUtterance instance
+    const utterance = new SpeechSynthesisUtterance(poem.content);
+    const voices = window.speechSynthesis.getVoices();
+    utterance.voice = voices.find(voice => voice.name === 'Google UK English Male'); // Choose a voice
+    utterance.rate = 0.9; // Control the speed of the recitation
+
+    // Start speaking
+    window.speechSynthesis.speak(utterance);
+
+    // Set the state to indicate we are reciting
+    setIsReciting(true);
+    setCurrentUtterance(utterance);
+
+    // Reset the reciting state when the speech ends
+    utterance.onend = () => {
+      setIsReciting(false);
+      setCurrentUtterance(null);
+    };
+  };
+
+  const stopRecitation = () => {
+    // Stop any ongoing speech synthesis
+    window.speechSynthesis.cancel();
+    setIsReciting(false);
+    setCurrentUtterance(null);
   };
 
   return (
-    <div className=" min-h-screen text-lime-400 p-6">
+    <div className="min-h-screen text-white p-6">
       <video autoPlay muted loop className="absolute top-0 left-0 min-w-full min-h-full -z-10 bg-black">
         <source src="https://ik.imagekit.io/24rqula8cp/12146723_3840_2160_30fps.mp4?updatedAt=1728552794824" type="video/mp4"/>
       </video>
       <div className="container mx-auto">
-
         {!isLoggedIn ? (
           <div className="mb-6">
             <div className="mb-6 flex flex-col justify-center items-center h-screen">
@@ -223,70 +264,40 @@ function App() {
           </div>
         ) : (
           <div>
-              <h1 className="text-7xl text-white mb-6 text-center font-extrabold">Poetry Haven</h1>
-              <div className="flex justify-between">
-              <button
-              className="bg-purple-600 p-2 rounded-xl hover:bg-purple-700 text-3xl font-bold"
-              onClick={() => setIsPoemModalOpen(true)} // Open the poem modal
+            <h1 className="text-5xl font-bold mb-6">Welcome, {username}!</h1>
+            <button
+              className="bg-purple-600 p-2 rounded hover:bg-purple-700 mr-2 mt-7"
+              onClick={() => setIsPoemModalOpen(true)}
             >
-              New Poem
+              Add Poem
             </button>
             <button
-              className="bg-purple-600 p-2 rounded-xl hover:bg-red-700 ml-2 text-3xl font-bold"
+              className="bg-purple-600 p-2 rounded hover:bg-purple-700 mr-2 mt-7"
               onClick={handleLogout}
             >
-              Logout
+              Log Out
             </button>
-            </div>
-            <div className="mt-6">
-    <h2 className="text-2xl mb-4">All Poems</h2>
-    {poems.length > 0 ? (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {poems.map((poem) => (
-          <div key={poem.id} className="bg-gray-700 p-4 rounded-xl shadow-lg">
-            <h3 className="text-xl font-bold text-purple-500">{poem.title}</h3>
-            <p className="text-sm text-gray-400 italic">By: {poem.poet}</p>
-            <pre className="text-purple-300 whitespace-pre-wrap break-words mt-2 flex-grow">
-      {poem.content}
-    </pre>
             
-            {poem.user_id === userId && (
-              <button
-              className="bg-blue-600 p-2 rounded-xl hover:bg-gray-500 mt-2"
-              onClick={() => handleDeletePoem(poem.id)}
-            >
-              Delete Poem
-            </button>
-            )}
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p className="text-white">No poems available.</p>
-    )}
-  </div>
-
-            {/* Poem Modal */}
             {isPoemModalOpen && (
               <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
                 <div className="bg-gray-800 p-6 rounded-lg relative">
                   <button
                     className="absolute top-0 right-0 m-2 text-white hover:text-gray-700"
-                    onClick={() => setIsPoemModalOpen(false)} // Close modal
+                    onClick={() => setIsPoemModalOpen(false)}
                   >
                     X
                   </button>
-                  <h2 className="text-2xl mb-4">Write a Poem</h2>
+                  <h2 className="text-2xl mb-4">Submit a Poem</h2>
                   <input
                     type="text"
                     className="p-2 border border-purple-500 rounded w-full mb-2 bg-gray-800 text-white"
-                    placeholder="Poem Title"
+                    placeholder="Title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                   />
                   <textarea
                     className="p-2 border border-purple-500 rounded w-full mb-2 bg-gray-800 text-white"
-                    placeholder="Poem Content"
+                    placeholder="Content"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                   />
@@ -299,6 +310,37 @@ function App() {
                 </div>
               </div>
             )}
+
+            <h2 className="text-4xl font-bold text-white mb-6">All Poems</h2>
+            <div className="grid grid-cols-3 gap-4">
+              {poems.map((poem) => (
+                <div
+                  key={poem.id}
+                  className="p-4 border border-purple-600 rounded hover:bg-gray-700 transition-all"
+                >
+                  <h3 className="text-2xl font-bold mb-2">{poem.title}</h3>
+                  <p className="mt-2 italic text-white">~ {poem.poet}</p>
+                  <pre className="text-purple-400 whitespace-pre-wrap break-words mt-2 flex-grow">
+      {poem.content}
+    </pre>
+                  
+                  <button
+                    className="bg-purple-600 p-2 rounded hover:bg-purple-700 mr-2 mt-4"
+                    onClick={() => toggleRecitePoem(poem)}
+                  >
+                    {isReciting ? 'Stop Reciting' : 'Recite Poem'}
+                  </button>
+                  {userId === poem.user_id && (
+                    <button
+                      className="bg-red-600 p-2 rounded hover:bg-red-700 mr-2 mt-4"
+                      onClick={() => handleDeletePoem(poem.id)}
+                    >
+                      Delete Poem
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
