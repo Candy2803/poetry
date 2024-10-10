@@ -223,19 +223,21 @@ function App() {
           </div>
         ) : (
           <div>
-            <h2 className="text-2xl mb-4">Write a Poem</h2>
-            <button
-              className="bg-purple-600 p-2 rounded hover:bg-purple-700"
+              <h1 className="text-7xl text-white mb-6 text-center font-extrabold">Poetry Haven</h1>
+              <div className="flex justify-between">
+              <button
+              className="bg-purple-600 p-2 rounded hover:bg-purple-700 text-3xl font-bold"
               onClick={() => setIsPoemModalOpen(true)} // Open the poem modal
             >
               New Poem
             </button>
             <button
-              className="bg-purple-600 p-2 rounded hover:bg-red-700 ml-2"
+              className="bg-purple-600 p-2 rounded hover:bg-red-700 ml-2 text-3xl font-bold"
               onClick={handleLogout}
             >
               Logout
             </button>
+            </div>
             <div className="mt-6">
     <h2 className="text-2xl mb-4">All Poems</h2>
     {poems.length > 0 ? (
