@@ -245,7 +245,7 @@ function App() {
         {poems.map((poem) => (
           <div key={poem.id} className="bg-gray-700 p-4 rounded shadow-lg">
             <h3 className="text-xl font-bold text-purple-500">{poem.title}</h3>
-            <p className="text-sm text-gray-400">By: {poem.poet}</p>
+            <p className="text-sm text-gray-400 italic">By: {poem.poet}</p>
             <pre className="text-purple-300 whitespace-pre-wrap break-words mt-2 flex-grow">
       {poem.content}
     </pre>
