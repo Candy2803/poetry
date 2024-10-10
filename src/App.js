@@ -54,16 +54,30 @@ function App() {
 
   const handleSignup = async () => {
     try {
-      await axios.post('https://poetry-3.onrender.com/api/register', {
+      const response = await axios.post('https://poetry-3.onrender.com/api/register', {
         username,
         password,
       });
+  
+      console.log('Signup response:', response.data); // Check the server's response
       alert('Signup successful!');
-      setIsSignupOpen(false); 
+      setIsSignupOpen(false); // Close the modal upon successful signup
     } catch (error) {
-      console.error('Error signing up:', error);
+      console.error('Error details:', error); // Log the entire error object
+      
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        alert(`Error: ${error.response.data.message || 'Signup failed. Please try again.'}`);
+      } else if (error.request) {
+        console.error('Error request:', error.request);
+        alert('No response from server. Please check your network.');
+      } else {
+        console.error('General Error:', error.message);
+        alert('Something went wrong.');
+      }
     }
   };
+  
 
   const handleLogin = async () => {
     try {
