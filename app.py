@@ -28,15 +28,15 @@ def create_tables():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         content TEXT NOT NULL,
-        user_id INTEGER
+        user_id INTEGER,
+        poet TEXT NOT NULL
     )''')
-
-    # Add poet column if it doesn't exist
-    try:
-        conn.execute("ALTER TABLE poems ADD COLUMN poet TEXT;")
-    except sqlite3.OperationalError:
-        # This error is raised if the column already exists
-        pass
+    
+    # conn.execute('''CREATE TABLE IF NOT EXIST MyPoems(
+    #     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #     title TEXT NOT NULL,
+    #     content TEXT NOT NULL,
+    #     )''')
 
     conn.commit()
     conn.close()
@@ -74,7 +74,7 @@ def login():
     conn.close()
 
     if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
-        return jsonify({'message': 'Login successful', 'user_id': user['id']}), 200
+        return jsonify({'message': 'Login successful', 'user_id': user['id'], 'username': user['username']}), 200
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
 
@@ -100,8 +100,19 @@ def submit_poem():
 # Get Poems Endpoint
 @app.route('/api/poems', methods=['GET'])
 def get_poems():
+    # Retrieve user_id if available (to fetch only their poems)
+    data = request.args
+    user_id = data.get('user_id')
+
     conn = get_db_connection()
-    poems = conn.execute('SELECT * FROM poems').fetchall()
+
+    if user_id:
+        # If user_id is passed, fetch only the poems of the logged-in user
+        poems = conn.execute('SELECT * FROM poems WHERE user_id = ?', (user_id,)).fetchall()
+    else:
+        # Otherwise, fetch all poems
+        poems = conn.execute('SELECT * FROM poems').fetchall()
+
     conn.close()
 
     poem_list = []
@@ -111,23 +122,44 @@ def get_poems():
             'title': poem['title'],
             'content': poem['content'],
             'user_id': poem['user_id'],
-            'poet': poem['poet'],  # Include the poet's name
+            'poet': poem['poet'],
         })
 
     return jsonify(poem_list), 200
 
 # Delete a Poem Endpoint
+# Delete a Poem Endpoint
 @app.route('/api/poems/<int:id>', methods=['DELETE'])
 def delete_poem(id):
+    # Extract user_id from the request payload
+    data = request.json
+    user_id = data.get('user_id')  # Assuming user ID is passed in the request payload
+
+    # Fetch the poem from the database
     conn = get_db_connection()
+    poem = conn.execute('SELECT * FROM poems WHERE id = ?', (id,)).fetchone()
+    
+    # Check if the poem exists
+    if not poem:
+        conn.close()
+        return jsonify({'error': 'Poem not found'}), 404
+
+    # Check if the logged-in user is the author of the poem
+    if poem['user_id'] != user_id:
+        conn.close()
+        return jsonify({'error': 'You are not authorized to delete this poem'}), 403
+
     try:
+        # Delete the poem if the user is the owner
         conn.execute('DELETE FROM poems WHERE id = ?', (id,))
         conn.commit()
-        return jsonify({'message': 'Poem deleted successfully!'}), 204  # No Content
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    finally:
         conn.close()
+
+        return jsonify({'message': 'Poem deleted successfully!'}), 200
+    except Exception as e:
+        conn.close()
+        return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
