@@ -89,7 +89,6 @@ function App() {
   };
 
   const handleSubmitPoem = async () => {
-    preventDefault()
     try {
       await axios.post('https://poetry-3.onrender.com/api/poems', {
         title,
