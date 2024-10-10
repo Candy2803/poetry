@@ -226,13 +226,13 @@ function App() {
               <h1 className="text-7xl text-white mb-6 text-center font-extrabold">Poetry Haven</h1>
               <div className="flex justify-between">
               <button
-              className="bg-purple-600 p-2 rounded hover:bg-purple-700 text-3xl font-bold"
+              className="bg-purple-600 p-2 rounded-xl hover:bg-purple-700 text-3xl font-bold"
               onClick={() => setIsPoemModalOpen(true)} // Open the poem modal
             >
               New Poem
             </button>
             <button
-              className="bg-purple-600 p-2 rounded hover:bg-red-700 ml-2 text-3xl font-bold"
+              className="bg-purple-600 p-2 rounded-xl hover:bg-red-700 ml-2 text-3xl font-bold"
               onClick={handleLogout}
             >
               Logout
@@ -243,7 +243,7 @@ function App() {
     {poems.length > 0 ? (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {poems.map((poem) => (
-          <div key={poem.id} className="bg-gray-700 p-4 rounded shadow-lg">
+          <div key={poem.id} className="bg-gray-700 p-4 rounded-xl shadow-lg">
             <h3 className="text-xl font-bold text-purple-500">{poem.title}</h3>
             <p className="text-sm text-gray-400 italic">By: {poem.poet}</p>
             <pre className="text-purple-300 whitespace-pre-wrap break-words mt-2 flex-grow">
@@ -252,7 +252,7 @@ function App() {
             
             {poem.user_id === userId && (
               <button
-              className="bg-blue-600 p-2 rounded hover:bg-gray-500 mt-2"
+              className="bg-blue-600 p-2 rounded-xl hover:bg-gray-500 mt-2"
               onClick={() => handleDeletePoem(poem.id)}
             >
               Delete Poem
