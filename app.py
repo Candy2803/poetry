@@ -51,7 +51,7 @@ def register():
     username = data['username']
     password = data['password']
 
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    # hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     try:
         conn = get_db_connection()

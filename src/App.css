@@ -36,3 +36,19 @@
     transform: rotate(360deg);
   }
 }
+body {
+  margin: 0;
+  padding: 0;
+  background-color: black;
+}
+
+video {
+  object-fit: cover;
+  width: 100%;
+  height: 100vh;
+}
+
+.container {
+  position: relative;
+  z-index: 1; /* Ensure the content is above the video */
+}
