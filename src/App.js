@@ -98,7 +98,7 @@ function App() {
       alert('Poem submitted successfully!');
       setTitle('');
       setContent('');
-      setIsPoemModalOpen(false); // Close the modal after submission
+      setIsPoemModalOpen(false); 
       fetchPoems(); 
     } catch (error) {
       console.error('Error submitting poem:', error);
@@ -134,7 +134,7 @@ function App() {
 
   return (
     <div className=" min-h-screen text-white p-6">
-      <video autoPlay muted loop className="bg-scroll fixed top-0 left-0 min-w-full min-h-full -z-10 bg-black">
+      <video autoPlay muted loop className="bg-scroll fixed top-0 left-0 min-w-full min-h-full -z-10 brightness-50	 bg-black">
         <source src="https://ik.imagekit.io/24rqula8cp/12146723_3840_2160_30fps.mp4?updatedAt=1728552794824" type="video/mp4"/>
       </video>
       <div className="container mx-auto">
@@ -286,7 +286,7 @@ function App() {
                 >
                   <h3 className="text-2xl font-bold mb-2">{poem.title}</h3>
                   <p className="mt-2 italic text-gray-400">~ {poem.poet}</p>
-                  <pre className="text-purple-400 whitespace-pre-wrap break-words mt-2 flex-grow">
+                  <pre className="text-white-400 whitespace-pre-wrap break-words mt-2 flex-grow">
       {poem.content}
     </pre>
                   
